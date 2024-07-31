@@ -1,10 +1,17 @@
 import json
 import os
-# from tokens import githubToken, apikey
 import openai
-from llama_index.readers import GithubRepositoryReader
-from llama_index import VectorStoreIndex
-from llama_index import StorageContext, load_index_from_storage
+from llama_index.core import VectorStoreIndex, SimpleDirectoryReader,\
+    StorageContext, load_index_from_storage
+    
+# from llama_index import VectorStoreIndex
+
+# from llama_index import StorageContext, load_index_from_storage
+
+# from llama_index.readers.github.repository.base import GithubRepositoryReader
+
+# Requires: pip install llama-index-readers-github
+from llama_index.readers.github import GithubRepositoryReader, GithubClient
 
 creds = json.load(open("credentials.json"))
 apikey = creds["openai-key"]
@@ -22,17 +29,17 @@ if folder_exists:
 else:
     reader = GithubRepositoryReader(
         "wware",
-        "python-hacks",
-        ignore_directories=[
-            ".github",
-            ".vscode",
-            "benchmarks",
-            "docs",
-            "examples",
-            "experimental",
-            "scripts",
-            "tests"
-        ]
+        "python-hacks"
+        # ignore_directories=[
+        #     ".github",
+        #     ".vscode",
+        #     "benchmarks",
+        #     "docs",
+        #     "examples",
+        #     "experimental",
+        #     "scripts",
+        #     "tests"
+        # ]
     )
     branch_documents = reader.load_data(branch="main")
     index = VectorStoreIndex.from_documents(branch_documents)
