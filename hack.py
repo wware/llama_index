@@ -29,13 +29,27 @@ if folder_exists:
     storage_context = StorageContext.from_defaults(persist_dir="./storage")
     index = load_index_from_storage(storage_context)
 else:
+    print("here we go")
     reader = GithubRepositoryReader(
         github_client=github_client,
         owner="wware",
         repo="python-hacks")
-    branch_documents = reader.load_data(branch="main")
-    index = VectorStoreIndex.from_documents(branch_documents)
-    index.storage_context.persist()
+    #branch_documents = reader.load_data(branch="main")
+    documents = reader.load_data(branch="main")
+    print(documents)
+
+    from llama_index.core.llama_pack import download_llama_pack
+
+    # download and install dependencies
+    OllamaQueryEnginePack = download_llama_pack(
+        "OllamaQueryEnginePack", "./ollama_pack"
+    )
+
+    # You can use any llama-hub loader to get documents!
+    ollama_pack = OllamaQueryEnginePack(model="llama2", documents=documents)
+
+    #index = VectorStoreIndex.from_documents(branch_documents)
+    #index.storage_context.persist()
 
 query_engine = index.as_query_engine()
 
